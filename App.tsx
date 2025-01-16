@@ -8,6 +8,8 @@
 import React from 'react';
 import type {PropsWithChildren} from 'react';
 import {
+  Button,
+  NativeModules,
   SafeAreaView,
   ScrollView,
   StatusBar,
@@ -24,6 +26,7 @@ import {
   LearnMoreLinks,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import { MathOperationsProxy } from './src/mathops/MathOperationsProxy';
 
 type SectionProps = PropsWithChildren<{
   title: string;
@@ -64,6 +67,22 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={backgroundStyle}>
+      <Button
+        title="Install JSI Module"
+        onPress={() => {
+            NativeModules.JSIExampleInstaller.install();
+        }}
+      />
+      <Button
+        title="All Math Operations"
+        onPress={() => {
+          console.log('global - sum', MathOperationsProxy.sum(10, 3));
+          console.log('global - subtract', MathOperationsProxy.subtract(10, 3));
+          console.log('global - multiply', MathOperationsProxy.multiply(10, 3));
+          console.log('global - divide', MathOperationsProxy.divide(10, 3));
+          console.log('global - addGlobalVariables', MathOperationsProxy.addGlobalVariables());
+        }}
+        />
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={backgroundStyle.backgroundColor}
