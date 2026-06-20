@@ -1,0 +1,19 @@
+# Source: https://github.com/lirantal/npm-security-best-practices
+
+# Cooldown: skip versions published less than 30 days ago
+minimumReleaseAge: 43200
+
+minimumReleaseAgeExclude:
+  - react-native
+  - react
+  - '@react-native/*'
+
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 43200
+
+blockExoticSubdeps: true
+
+allowBuilds:
+  esbuild: true
+
+strictDepBuilds: true

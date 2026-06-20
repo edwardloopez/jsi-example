@@ -1,79 +1,70 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# JSIExample
 
-# Getting Started
+Educational React Native project demonstrating manual JSI integration with a C++ `HostObject`.
 
->**Note**: Make sure you have completed the [React Native - Environment Setup](https://reactnative.dev/docs/environment-setup) instructions till "Creating a new application" step, before proceeding.
+## Requirements
 
-## Step 1: Start the Metro Server
+- Node.js >= 20
+- pnpm 10+
+- Xcode (iOS) / Android Studio (Android)
 
-First, you will need to start **Metro**, the JavaScript _bundler_ that ships _with_ React Native.
-
-To start Metro, run the following command from the _root_ of your React Native project:
-
-```bash
-# using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Start your Application
-
-Let Metro Bundler run in its _own_ terminal. Open a _new_ terminal from the _root_ of your React Native project. Run the following command to start your _Android_ or _iOS_ app:
-
-### For Android
+## Getting Started
 
 ```bash
-# using npm
-npm run android
-
-# OR using Yarn
-yarn android
+pnpm install
+cd ios && pod install && cd ..
+pnpm start
 ```
 
-### For iOS
+In another terminal:
 
 ```bash
-# using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+pnpm ios
+# or
+pnpm android
 ```
 
-If everything is set up _correctly_, you should see your new app running in your _Android Emulator_ or _iOS Simulator_ shortly provided you have set up your emulator/simulator correctly.
+## JSI Demo
 
-This is one way to run your app — you can also run it directly from within Android Studio and Xcode respectively.
+On app launch, `JSIExampleInstaller.install()` runs automatically and registers `global.MathOperationsProxy`. Tap **All Math Operations** to exercise the native JSI bindings from JavaScript.
 
-## Step 3: Modifying your App
+## Security
 
-Now that you have successfully run the app, let's modify it.
+This project follows [npm-security-best-practices](https://github.com/lirantal/npm-security-best-practices):
 
-1. Open `App.tsx` in your text editor of choice and edit some lines.
-2. For **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Developer Menu** (<kbd>Ctrl</kbd> + <kbd>M</kbd> (on Window and Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (on macOS)) to see your changes!
+- `pnpm-workspace.yaml`: `strictDepBuilds`, `blockExoticSubdeps`, `minimumReleaseAge`, `trustPolicy`
+- `.npmrc`: `ignore-scripts=true`, `allow-git=none`, `node-linker=hoisted`
+- CI uses `pnpm install --frozen-lockfile` and `pnpm audit`
 
-   For **iOS**: Hit <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> in your iOS Simulator to reload the app and see your changes!
+### Controlled dependency upgrades
 
-## Congratulations! :tada:
+Avoid blind upgrades:
 
-You've successfully run and modified your React Native App. :partying_face:
+```bash
+# Avoid
+pnpm update
+npx npm-check-updates -u
 
-### Now what?
+# Prefer
+npx npm-check-updates --interactive
+pnpm audit --fix
+```
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [Introduction to React Native](https://reactnative.dev/docs/getting-started).
+### CI-like install locally
 
-# Troubleshooting
+```bash
+pnpm install:ci
+pnpm audit
+```
 
-If you can't get this to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+## Scripts
 
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+| Script | Description |
+|--------|-------------|
+| `pnpm start` | Start Metro |
+| `pnpm ios` | Run iOS app |
+| `pnpm android` | Run Android app |
+| `pnpm test` | Run Jest tests |
+| `pnpm lint` | Run ESLint |
+| `pnpm install:ci` | Deterministic install (frozen lockfile) |
+| `pnpm audit` | Security audit |

@@ -1,15 +1,15 @@
-#import "MathOperationsHostObject.h"
+#include "MathOperations.h"
 
-#import <Foundation/Foundation.h>
-#import <jsi/jsi.h>
+#include <android/log.h>
+#include <jni.h>
+#include <jsi/jsi.h>
 
 #include <cmath>
 #include <memory>
 
-using namespace facebook;
-using namespace facebook::jsi;
+namespace mathops {
 
-namespace {
+using namespace facebook;
 
 class MathOperationsHostObject : public jsi::HostObject {
 private:
@@ -95,7 +95,10 @@ public:
                     }
                     double b = arguments[1].asNumber();
                     if (b == 0.0) {
-                        NSLog(@"Cannot divide by zero.");
+                        __android_log_print(
+                            ANDROID_LOG_ERROR,
+                            "MathOperations",
+                            "Cannot divide by zero.");
                         return jsi::Value(std::nan(""));
                     }
                     return jsi::Value(arguments[0].asNumber() / b);
@@ -119,12 +122,33 @@ public:
     }
 };
 
-} // namespace
-
 void installMathOperations(jsi::Runtime& runtime) {
     auto hostObject = std::make_shared<MathOperationsHostObject>();
     runtime.global().setProperty(
         runtime,
         "MathOperationsProxy",
         jsi::Object::createFromHostObject(runtime, hostObject));
+}
+
+} // namespace mathops
+
+extern "C" JNIEXPORT void JNICALL
+Java_com_jsiexample_bridges_JSIExampleInstaller_nativeInstall(
+    JNIEnv*,
+    jclass,
+    jlong jsContextNativePointer) {
+    auto* runtime = reinterpret_cast<facebook::jsi::Runtime*>(jsContextNativePointer);
+    if (runtime == nullptr) {
+        __android_log_print(
+            ANDROID_LOG_ERROR,
+            "JSIExampleInstaller",
+            "Failed to get JS runtime pointer");
+        return;
+    }
+
+    mathops::installMathOperations(*runtime);
+    __android_log_print(
+        ANDROID_LOG_INFO,
+        "JSIExampleInstaller",
+        "JSI MathOperations installed on Android.");
 }

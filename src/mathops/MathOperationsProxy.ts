@@ -1,6 +1,6 @@
 import { MathOperationsUnavailableError } from './MathOperationsUnavailableError';
 
-interface MathOperationsProxy {
+interface MathOperationsProxyInterface {
   sum: (a: number, b: number) => number;
   subtract: (a: number, b: number) => number;
   multiply: (a: number, b: number) => number;
@@ -9,36 +9,23 @@ interface MathOperationsProxy {
 }
 
 declare global {
-    var MathOperationsProxy: MathOperationsProxy;
+  var MathOperationsProxy: MathOperationsProxyInterface | undefined;
 }
 
-let proxy: MathOperationsProxy;
-
-try {
-    const globalProxy = global.MathOperationsProxy as MathOperationsProxy | undefined;
-    if (globalProxy == null) {
-        throw new Error('global.MathOperationsProxy is not installed! Was the JSI module installed correctly?');
-    }
-
-    proxy = globalProxy;
-} catch (e) {
-    proxy = {
-        sum: () => {
-            throw new MathOperationsUnavailableError(e);
-        },
-        subtract: () => {
-            throw new MathOperationsUnavailableError(e);
-        },
-        multiply: () => {
-            throw new MathOperationsUnavailableError(e);
-        },
-        divide: () => {
-            throw new MathOperationsUnavailableError(e);
-        },
-        addGlobalVariables: () => {
-            throw new MathOperationsUnavailableError(e);
-        },
-    };
+function getProxy(): MathOperationsProxyInterface {
+  const installed = global.MathOperationsProxy;
+  if (installed == null) {
+    throw new MathOperationsUnavailableError(
+      'JSI not installed yet. Was the JSI module installed correctly?',
+    );
+  }
+  return installed;
 }
 
-export const MathOperationsProxy = proxy;
+export const MathOperationsProxy: MathOperationsProxyInterface = {
+  sum: (a, b) => getProxy().sum(a, b),
+  subtract: (a, b) => getProxy().subtract(a, b),
+  multiply: (a, b) => getProxy().multiply(a, b),
+  divide: (a, b) => getProxy().divide(a, b),
+  addGlobalVariables: () => getProxy().addGlobalVariables(),
+};
